@@ -20,7 +20,7 @@ This is the repo where the Frontend of our Final year project lives
   
     cd miniature-octo-robot-frontend
 
-  3. Install package dependencies.
+  4. Install package dependencies.
 
     npm i
 
