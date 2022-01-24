@@ -16,7 +16,11 @@ This is the repo where the Frontend of our Final year project lives
 
     git clone git@github.com:muleyashutosh/miniature-octo-robot-frontend.git
 
-  3. Install package dependencies.
+  3. Change directory to project directory
+  
+    cd miniature-octo-robot-frontend
+
+  4. Install package dependencies.
 
     npm i
 
