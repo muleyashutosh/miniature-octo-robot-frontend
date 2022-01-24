@@ -2,6 +2,25 @@
 
 This is the repo where the Frontend of our Final year project lives
 
+## First setup instructions
+
+  1. Make sure to have LTS version of node and npm installed [nodejs](http://nodejs.org)
+
+    node --version
+    > v16.13.2
+
+    npm --version 
+    > 8.1.2
+
+  2. Clone repository to local
+
+    git clone git@github.com:muleyashutosh/miniature-octo-robot-frontend.git
+
+  3. Install package dependencies.
+
+    npm i
+
+
 ## Available Scripts
 
 In the project directory, you can run:
