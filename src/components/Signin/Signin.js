@@ -52,7 +52,7 @@ export default function SignIn() {
 
     const handleLogin = () => {
         login().then(() => {
-            navigate(state?.path || "/dashboard");
+            navigate(state ? state.path : "/dashboard");
         });
     };
 
@@ -64,7 +64,8 @@ export default function SignIn() {
                 email: email,
                 password: password,
             })
-            handleLogin();
+            // handleLogin();
+            console.log(res)
         } catch (error) {
             console.log(error.response)
         }

@@ -4,12 +4,12 @@ const authContext = React.createContext();
 
 function useAuth() {
   const [authed, setAuthed] = React.useState(false);
-
   return {
     authed,
     login() {
       return new Promise((res) => {
         setAuthed(true);
+        console.log(authed)
         res();
       });
     },
