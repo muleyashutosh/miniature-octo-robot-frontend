@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { useNavigate } from "react-router-dom";
+import { useLocation, Navigate } from "react-router-dom";
+import useAuth from "./useAuth";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -14,6 +17,7 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import background from './background.jpg';
 import { useState } from 'react';
+const axios = require('axios').default;
 
 function Copyright(props) {
     return (
@@ -31,19 +35,61 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        // eslint-disable-next-line no-console
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
+
+    const [accountExists, setAccountExists] = useState(true)
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+
+    const clearInputState = () => {
+        setEmail("")
+        setPassword("")
+    }
+
+    const navigate = useNavigate();
+    const { login } = useAuth();
+    const { state } = useLocation();
+
+    const handleLogin = () => {
+        login().then(() => {
+            navigate(state?.path || "/dashboard");
         });
     };
 
-    const [accountExists, setAccountExists] = useState(true)
+    const signinSubmit = async (event) => {
+        event.preventDefault();
 
-    console.log(accountExists);
+        try {
+            const res = await axios.post('https://projectapi.elcarto.xyz/auth/signin', {
+                email: email,
+                password: password,
+            })
+            handleLogin();
+        } catch (error) {
+            console.log(error.response)
+        }
+
+    };
+
+    const signupSubmit = async (event) => {
+        event.preventDefault();
+
+        try {
+            const res = await axios.post('https://projectapi.elcarto.xyz/auth/signup', {
+                email: email,
+                password: password,
+                firstName: firstName,
+                lastName: lastName
+            })
+            console.log(res.data)
+        } catch (error) {
+            console.log(error.response.data.message)
+        }
+
+    };
+
+
     return (
         <ThemeProvider theme={theme}>
             <Grid container component="main" sx={{ height: '100vh' }}>
@@ -81,7 +127,7 @@ export default function SignIn() {
                                     <Typography component="h1" variant="h5">
                                         Sign in
                                     </Typography>
-                                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                                    <Box component="form" noValidate onSubmit={signinSubmit} sx={{ mt: 1 }}>
                                         <TextField
                                             margin="normal"
                                             required
@@ -90,6 +136,9 @@ export default function SignIn() {
                                             label="Email Address"
                                             name="email"
                                             autoComplete="email"
+                                            onChange={(e) => {
+                                                setEmail(e.target.value);
+                                            }}
                                             autoFocus
                                         />
                                         <TextField
@@ -100,6 +149,9 @@ export default function SignIn() {
                                             label="Password"
                                             type="password"
                                             id="password"
+                                            onChange={(e) => {
+                                                setPassword(e.target.value);
+                                            }}
                                             autoComplete="current-password"
                                         />
                                         <FormControlLabel
@@ -115,12 +167,10 @@ export default function SignIn() {
                                             Sign In
                                         </Button>
                                         <Grid container>
-                                            <Grid item xs>
-                                                <Link href="#" variant="body2">
-                                                    Forgot password?
-                                                </Link>
-                                            </Grid>
-                                            <Grid item onClick={() => { setAccountExists(false) }}>
+                                            <Grid item onClick={() => {
+                                                clearInputState()
+                                                setAccountExists(false)
+                                            }}>
 
                                                 <Link href="#" variant="body2">
                                                     {"Don't have an account? Sign Up"}
@@ -150,7 +200,7 @@ export default function SignIn() {
                                     <Typography component="h1" variant="h5">
                                         Sign up
                                     </Typography>
-                                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                                    <Box component="form" noValidate onSubmit={signupSubmit} sx={{ mt: 3 }}>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
@@ -160,6 +210,9 @@ export default function SignIn() {
                                                     fullWidth
                                                     id="firstName"
                                                     label="First Name"
+                                                    onChange={(e) => {
+                                                        setFirstName(e.target.value);
+                                                    }}
                                                     autoFocus
                                                 />
                                             </Grid>
@@ -170,6 +223,9 @@ export default function SignIn() {
                                                     id="lastName"
                                                     label="Last Name"
                                                     name="lastName"
+                                                    onChange={(e) => {
+                                                        setLastName(e.target.value);
+                                                    }}
                                                     autoComplete="family-name"
                                                 />
                                             </Grid>
@@ -180,6 +236,9 @@ export default function SignIn() {
                                                     id="email"
                                                     label="Email Address"
                                                     name="email"
+                                                    onChange={(e) => {
+                                                        setEmail(e.target.value);
+                                                    }}
                                                     autoComplete="email"
                                                 />
                                             </Grid>
@@ -191,13 +250,10 @@ export default function SignIn() {
                                                     label="Password"
                                                     type="password"
                                                     id="password"
+                                                    onChange={(e) => {
+                                                        setPassword(e.target.value);
+                                                    }}
                                                     autoComplete="new-password"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12}>
-                                                <FormControlLabel
-                                                    control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                                    label="I want to receive inspiration, marketing promotions and updates via email."
                                                 />
                                             </Grid>
                                         </Grid>
@@ -210,7 +266,10 @@ export default function SignIn() {
                                             Sign Up
                                         </Button>
                                         <Grid container justifyContent="flex-end">
-                                            <Grid item onClick={() => { setAccountExists(true) }}>
+                                            <Grid item onClick={() => {
+                                                clearInputState()
+                                                setAccountExists(true)
+                                            }}>
                                                 <Link href="#" variant="body2">
                                                     Already have an account? Sign in
                                                 </Link>
