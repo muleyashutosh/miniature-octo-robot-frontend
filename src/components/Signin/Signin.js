@@ -1,6 +1,5 @@
-import * as React from 'react';
-import { useNavigate } from "react-router-dom";
-import { useLocation, Navigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import useAuth from "./useAuth";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -15,9 +14,9 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
 import background from './background.jpg';
-import { useState } from 'react';
-const axios = require('axios').default;
+
 
 function Copyright(props) {
     return (
