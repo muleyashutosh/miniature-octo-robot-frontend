@@ -1,9 +1,12 @@
 import {useState, useEffect} from 'react'
 import useAxiosPrivate from '../hooks/useAxiosPrivate'
+import {useNavigate, useLocation} from 'react-router-dom'
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const axiosPrivate = useAxiosPrivate();
+  const navigage = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     let isMounted = true;
@@ -19,6 +22,7 @@ const Transactions = () => {
 
       } catch (err) {
         console.log(err)
+        navigage('/',  {state:{from: location}, replace: true})
       }
     }
 
