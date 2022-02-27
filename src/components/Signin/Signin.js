@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Navigate } from "react-router-dom";
-import useAuth from "./useAuth";
+import { useNavigate, useLocation } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -14,7 +14,7 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import axios from 'axios';
+import axios from '../../api/axios';
 import background from './background.jpg';
 
 
@@ -32,8 +32,15 @@ function Copyright(props) {
 }
 
 const theme = createTheme();
+const SIGNIN_URL= '/auth/signin';
+
 
 export default function SignIn() {
+    const { setAuth } = useAuth()
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/dashboard";
+    
 
     const [accountExists, setAccountExists] = useState(true)
     const [email, setEmail] = useState("")
@@ -46,26 +53,25 @@ export default function SignIn() {
         setPassword("")
     }
 
-    const navigate = useNavigate();
-    const { login } = useAuth();
-    const { state } = useLocation();
 
-    const handleLogin = () => {
-        login().then(() => {
-            navigate(state ? state.path : "/dashboard");
-        });
-    };
-
-    const signinSubmit = async (event) => {
+    const handleLogin = async (event) => {
         event.preventDefault();
 
         try {
-            const res = await axios.post('https://projectapi.elcarto.xyz/auth/signin', {
+            const res = await axios.post(SIGNIN_URL, {
                 email: email,
                 password: password,
-            })
-            // handleLogin();
-            console.log(res)
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true
+            });
+            console.log(res.data)
+            const accessToken = res?.data?.accessToken;
+            
+            setAuth({email, password, accessToken})
+            navigate(from, {replace: true});
         } catch (error) {
             console.log(error.response)
         }
@@ -76,13 +82,22 @@ export default function SignIn() {
         event.preventDefault();
 
         try {
-            const res = await axios.post('https://projectapi.elcarto.xyz/auth/signup', {
+            const res = await axios.post('/auth/signup', {
                 email: email,
                 password: password,
                 firstName: firstName,
                 lastName: lastName
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true
             })
             console.log(res.data)
+            const accessToken = res?.data?.accessToken;
+
+            setAuth({ email, password, accessToken })
+            navigate(from, { replace: true });
         } catch (error) {
             console.log(error.response.data.message)
         }
@@ -127,7 +142,7 @@ export default function SignIn() {
                                     <Typography component="h1" variant="h5">
                                         Sign in
                                     </Typography>
-                                    <Box component="form" noValidate onSubmit={signinSubmit} sx={{ mt: 1 }}>
+                                    <Box component="form" noValidate onSubmit={handleLogin} sx={{ mt: 1 }}>
                                         <TextField
                                             margin="normal"
                                             required

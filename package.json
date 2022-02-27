@@ -11,6 +11,8 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.26.0",
+    "dotenv": "^16.0.0",
+    "jwt-decode": "^3.1.2",
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "^6.2.1",
