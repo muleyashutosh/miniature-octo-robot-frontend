@@ -70,8 +70,9 @@ export default function SignIn() {
 
     function validatePassword(inputPassword) {
 
+        var passwordValid, passwordFormat;
         const newConditionsition = {
-            minLen8: (inputPassword.length>7) ? true : false,
+            minLen8: (inputPassword.length > 7) ? true : false,
             oneCapitalLetter: (/[A-Z]/.test(inputPassword)) ? true : false,
             oneSmallLetter: (/[a-z]/.test(inputPassword)) ? true : false,
             oneNumber: (/\d/.test(inputPassword)) ? true : false,
@@ -79,14 +80,18 @@ export default function SignIn() {
 
         }
         setConditions(newConditionsition)
-        // console.log(joi.min(8))
 
-        if (Object.values(newConditionsition).every(value => value === true)){
-            setIsPasswordValid(true)
-            setShowPasswordFormat(false)
+        if (Object.values(newConditionsition).every(value => value === true)) {
+            passwordValid = true
+            passwordFormat = false
         }
-        else
-            setIsPasswordValid(false)
+        else {
+            passwordValid = false
+            passwordFormat = true
+        }
+        setIsPasswordValid(passwordValid);
+        setShowPasswordFormat(passwordFormat)
+        console.log(isPasswordValid)
     }
 
 
@@ -211,7 +216,7 @@ export default function SignIn() {
                                             control={<Checkbox value="remember" color="primary" />}
                                             label="Remember me"
                                         />
-                                        <Alert severity="error" sx={{fontSize:16,display:showError}}>{errorMsg}</Alert>
+                                        <Alert severity="error" sx={{ fontSize: 16, display: showError }}>{errorMsg}</Alert>
                                         <Button
                                             type="submit"
                                             fullWidth
@@ -313,7 +318,7 @@ export default function SignIn() {
                                                     }}
                                                     autoComplete="new-password"
                                                     onFocus={(e) => {
-                                                        setShowPasswordFormat(true);
+                                                        isPasswordValid ? setShowPasswordFormat(false) : setShowPasswordFormat(true);
                                                     }}
                                                     InputProps={
                                                         isPasswordValid ?
@@ -330,18 +335,18 @@ export default function SignIn() {
 
                                                 />
                                                 {showPasswordFormat
-                                                ?
-                                                (<Box sx={{fontSize:14}}>
-                                                    <ul>
-                                                        <li style={{ color: conditions.minLen8 ? "green" : "red" }}>Min Length 8</li>
-                                                        <li style={{ color: conditions.oneCapitalLetter ? "green" : "red" }}>Must have Capital Letter</li>
-                                                        <li style={{ color: conditions.oneSmallLetter ? "green" : "red" }}>Must have small Letter</li>
-                                                        <li style={{ color: conditions.oneNumber ? "green" : "red" }}>Must have an Integer</li>
-                                                        <li style={{ color: conditions.oneSpecialCharacter ? "green" : "red" }}>Must have special characters (*,#,$ etc)</li>
-                                                    </ul>
-                                                </Box>)
-                                                :
-                                                <></>
+                                                    ?
+                                                    (<Box sx={{ fontSize: 14 }}>
+                                                        <ul>
+                                                            <li style={{ color: conditions.minLen8 ? "green" : "red" }}>Min Length 8</li>
+                                                            <li style={{ color: conditions.oneCapitalLetter ? "green" : "red" }}>Must have Capital Letter</li>
+                                                            <li style={{ color: conditions.oneSmallLetter ? "green" : "red" }}>Must have small Letter</li>
+                                                            <li style={{ color: conditions.oneNumber ? "green" : "red" }}>Must have an Integer</li>
+                                                            <li style={{ color: conditions.oneSpecialCharacter ? "green" : "red" }}>Must have special characters (*,#,$ etc)</li>
+                                                        </ul>
+                                                    </Box>)
+                                                    :
+                                                    <></>
                                                 }
                                             </Grid>
                                         </Grid>
@@ -353,7 +358,7 @@ export default function SignIn() {
                                         >
                                             Sign Up
                                         </Button>
-                                        <Alert severity="error" sx={{fontSize:16,display:showError}}>{errorMsg}</Alert>
+                                        <Alert severity="error" sx={{ fontSize: 16, display: showError }}>{errorMsg}</Alert>
                                         <Grid container justifyContent="flex-end">
                                             <Grid item onClick={() => {
                                                 clearInputState()
