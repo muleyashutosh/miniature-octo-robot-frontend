@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useAuth from "../../hooks/useAuth";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -13,16 +14,18 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from '../../api/axios';
 import background from './background.jpg';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import InputAdornment from '@mui/material/InputAdornment';
+import Alert from '@mui/material/Alert';
 
 
 function Copyright(props) {
     return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
+        <Typography variant="body2" color="text.seConditionsary" align="center" {...props}>
             {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
+            <Link color="inherit" href="">
                 Your Website
             </Link>{' '}
             {new Date().getFullYear()}
@@ -32,7 +35,7 @@ function Copyright(props) {
 }
 
 const theme = createTheme();
-const SIGNIN_URL= '/auth/signin';
+const SIGNIN_URL = '/auth/signin';
 
 
 export default function SignIn() {
@@ -40,8 +43,20 @@ export default function SignIn() {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || "/dashboard";
-    
 
+
+    const [showError, setShowError] = useState("none")
+    const [isPasswordValid, setIsPasswordValid] = useState(false)
+    const [showPasswordFormat, setShowPasswordFormat] = useState(false)
+    const defaultConditions = {
+        minLen8: false,
+        oneCapitalLetter: false,
+        oneSmallLetter: false,
+        oneNumber: false,
+        oneSpecialCharacter: false,
+    }
+    const [conditions, setConditions] = useState(defaultConditions)
+    const [errorMsg, setErrorMsg] = useState("none")
     const [accountExists, setAccountExists] = useState(true)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -53,10 +68,30 @@ export default function SignIn() {
         setPassword("")
     }
 
+    function validatePassword(inputPassword) {
+
+        const newConditionsition = {
+            minLen8: (inputPassword.length>7) ? true : false,
+            oneCapitalLetter: (/[A-Z]/.test(inputPassword)) ? true : false,
+            oneSmallLetter: (/[a-z]/.test(inputPassword)) ? true : false,
+            oneNumber: (/\d/.test(inputPassword)) ? true : false,
+            oneSpecialCharacter: (/[^\w]/.test(inputPassword)) ? true : false,
+
+        }
+        setConditions(newConditionsition)
+        // console.log(joi.min(8))
+
+        if (Object.values(newConditionsition).every(value => value === true)){
+            setIsPasswordValid(true)
+            setShowPasswordFormat(false)
+        }
+        else
+            setIsPasswordValid(false)
+    }
+
 
     const handleLogin = async (event) => {
         event.preventDefault();
-
         try {
             const res = await axios.post(SIGNIN_URL, {
                 email: email,
@@ -69,18 +104,19 @@ export default function SignIn() {
             });
             console.log(res.data)
             const accessToken = res?.data?.accessToken;
-            
-            setAuth({email, password, accessToken})
-            navigate(from, {replace: true});
+
+            setAuth({ email, password, accessToken })
+            navigate(from, { replace: true });
         } catch (error) {
             console.log(error.response)
+            setShowError("");
+            setErrorMsg(error.response.data['message']);
         }
 
     };
 
     const signupSubmit = async (event) => {
         event.preventDefault();
-
         try {
             const res = await axios.post('/auth/signup', {
                 email: email,
@@ -99,7 +135,9 @@ export default function SignIn() {
             setAuth({ email, password, accessToken })
             navigate(from, { replace: true });
         } catch (error) {
-            console.log(error.response.data.message)
+            console.log(error.response)
+            setShowError("");
+            setErrorMsg(error.response.data['message']);
         }
 
     };
@@ -136,13 +174,13 @@ export default function SignIn() {
                                         alignItems: 'center',
                                     }}
                                 >
-                                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                                    <Avatar sx={{ m: 1, bgcolor: 'seConditionsary.main' }}>
                                         <LockOutlinedIcon />
                                     </Avatar>
                                     <Typography component="h1" variant="h5">
                                         Sign in
                                     </Typography>
-                                    <Box component="form" noValidate onSubmit={handleLogin} sx={{ mt: 1 }}>
+                                    <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
                                         <TextField
                                             margin="normal"
                                             required
@@ -173,6 +211,7 @@ export default function SignIn() {
                                             control={<Checkbox value="remember" color="primary" />}
                                             label="Remember me"
                                         />
+                                        <Alert severity="error" sx={{fontSize:16,display:showError}}>{errorMsg}</Alert>
                                         <Button
                                             type="submit"
                                             fullWidth
@@ -185,6 +224,7 @@ export default function SignIn() {
                                             <Grid item onClick={() => {
                                                 clearInputState()
                                                 setAccountExists(false)
+                                                setShowError("none")
                                             }}>
 
                                                 <Link href="#" variant="body2">
@@ -202,20 +242,20 @@ export default function SignIn() {
                             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                                 <Box
                                     sx={{
-                                        my: 14,
+                                        my: 12,
                                         mx: 12,
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'center',
                                     }}
                                 >
-                                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                                    <Avatar sx={{ m: 1, bgcolor: 'seConditionsary.main' }}>
                                         <LockOutlinedIcon />
                                     </Avatar>
                                     <Typography component="h1" variant="h5">
                                         Sign up
                                     </Typography>
-                                    <Box component="form" noValidate onSubmit={signupSubmit} sx={{ mt: 3 }}>
+                                    <Box component="form" onSubmit={signupSubmit} sx={{ mt: 3 }}>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
@@ -248,10 +288,12 @@ export default function SignIn() {
                                                 <TextField
                                                     required
                                                     fullWidth
+                                                    type="email"
                                                     id="email"
                                                     label="Email Address"
                                                     name="email"
                                                     onChange={(e) => {
+                                                        console.log(e.target.checkValidity())
                                                         setEmail(e.target.value);
                                                     }}
                                                     autoComplete="email"
@@ -267,9 +309,40 @@ export default function SignIn() {
                                                     id="password"
                                                     onChange={(e) => {
                                                         setPassword(e.target.value);
+                                                        validatePassword(e.target.value);
                                                     }}
                                                     autoComplete="new-password"
+                                                    onFocus={(e) => {
+                                                        setShowPasswordFormat(true);
+                                                    }}
+                                                    InputProps={
+                                                        isPasswordValid ?
+                                                            {
+                                                                endAdornment: (
+                                                                    <InputAdornment position="end"  >
+                                                                        <CheckCircleIcon color='success' style={{ display: "hidden" }} />
+                                                                    </InputAdornment>
+                                                                ),
+                                                            }
+                                                            :
+                                                            {}
+                                                    }
+
                                                 />
+                                                {showPasswordFormat
+                                                ?
+                                                (<Box sx={{fontSize:14}}>
+                                                    <ul>
+                                                        <li style={{ color: conditions.minLen8 ? "green" : "red" }}>Min Length 8</li>
+                                                        <li style={{ color: conditions.oneCapitalLetter ? "green" : "red" }}>Must have Capital Letter</li>
+                                                        <li style={{ color: conditions.oneSmallLetter ? "green" : "red" }}>Must have small Letter</li>
+                                                        <li style={{ color: conditions.oneNumber ? "green" : "red" }}>Must have an Integer</li>
+                                                        <li style={{ color: conditions.oneSpecialCharacter ? "green" : "red" }}>Must have special characters (*,#,$ etc)</li>
+                                                    </ul>
+                                                </Box>)
+                                                :
+                                                <></>
+                                                }
                                             </Grid>
                                         </Grid>
                                         <Button
@@ -280,10 +353,14 @@ export default function SignIn() {
                                         >
                                             Sign Up
                                         </Button>
+                                        <Alert severity="error" sx={{fontSize:16,display:showError}}>{errorMsg}</Alert>
                                         <Grid container justifyContent="flex-end">
                                             <Grid item onClick={() => {
                                                 clearInputState()
                                                 setAccountExists(true)
+                                                setIsPasswordValid(false);
+                                                setConditions(defaultConditions)
+                                                setShowError("none")
                                             }}>
                                                 <Link href="#" variant="body2">
                                                     Already have an account? Sign in
