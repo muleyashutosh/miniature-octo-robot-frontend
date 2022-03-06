@@ -23,7 +23,7 @@ import Alert from '@mui/material/Alert';
 
 function Copyright(props) {
     return (
-        <Typography variant="body2" color="text.seConditionsary" align="center" {...props}>
+        <Typography variant="body2" color="text.secondary" align="center" {...props}>
             {'Copyright © '}
             <Link color="inherit" href="">
                 Your Website
@@ -36,6 +36,7 @@ function Copyright(props) {
 
 const theme = createTheme();
 const SIGNIN_URL = '/auth/signin';
+const SIGNUP_URL = '/auth/signup';
 
 
 export default function SignIn() {
@@ -47,15 +48,15 @@ export default function SignIn() {
 
     const [showError, setShowError] = useState("none")
     const [isPasswordValid, setIsPasswordValid] = useState(false)
-    const [showPasswordFormat, setShowPasswordFormat] = useState(false)
-    const defaultConditions = {
+    const [showPasswordChecks, setShowPasswordChecks] = useState(false)
+    const defaultValidations = {
         minLen8: false,
         oneCapitalLetter: false,
         oneSmallLetter: false,
         oneNumber: false,
         oneSpecialCharacter: false,
     }
-    const [conditions, setConditions] = useState(defaultConditions)
+    const [validations, setValidations] = useState(defaultValidations)
     const [errorMsg, setErrorMsg] = useState("none")
     const [accountExists, setAccountExists] = useState(true)
     const [email, setEmail] = useState("")
@@ -70,8 +71,8 @@ export default function SignIn() {
 
     function validatePassword(inputPassword) {
 
-        var passwordValid, passwordFormat;
-        const newConditionsition = {
+        let passwordValid, passwordFormat;
+        const newValidations = {
             minLen8: (inputPassword.length > 7) ? true : false,
             oneCapitalLetter: (/[A-Z]/.test(inputPassword)) ? true : false,
             oneSmallLetter: (/[a-z]/.test(inputPassword)) ? true : false,
@@ -79,9 +80,9 @@ export default function SignIn() {
             oneSpecialCharacter: (/[^\w]/.test(inputPassword)) ? true : false,
 
         }
-        setConditions(newConditionsition)
+        setValidations(newValidations)
 
-        if (Object.values(newConditionsition).every(value => value === true)) {
+        if (Object.values(newValidations).every(value => value === true)) {
             passwordValid = true
             passwordFormat = false
         }
@@ -90,8 +91,7 @@ export default function SignIn() {
             passwordFormat = true
         }
         setIsPasswordValid(passwordValid);
-        setShowPasswordFormat(passwordFormat)
-        console.log(isPasswordValid)
+        setShowPasswordChecks(passwordFormat)
     }
 
 
@@ -107,13 +107,11 @@ export default function SignIn() {
                 },
                 withCredentials: true
             });
-            console.log(res.data)
             const accessToken = res?.data?.accessToken;
 
             setAuth({ email, password, accessToken })
             navigate(from, { replace: true });
         } catch (error) {
-            console.log(error.response)
             setShowError("");
             setErrorMsg(error.response.data['message']);
         }
@@ -123,7 +121,7 @@ export default function SignIn() {
     const signupSubmit = async (event) => {
         event.preventDefault();
         try {
-            const res = await axios.post('/auth/signup', {
+            const res = await axios.post(SIGNUP_URL, {
                 email: email,
                 password: password,
                 firstName: firstName,
@@ -134,13 +132,11 @@ export default function SignIn() {
                 },
                 withCredentials: true
             })
-            console.log(res.data)
             const accessToken = res?.data?.accessToken;
 
             setAuth({ email, password, accessToken })
             navigate(from, { replace: true });
         } catch (error) {
-            console.log(error.response)
             setShowError("");
             setErrorMsg(error.response.data['message']);
         }
@@ -179,7 +175,7 @@ export default function SignIn() {
                                         alignItems: 'center',
                                     }}
                                 >
-                                    <Avatar sx={{ m: 1, bgcolor: 'seConditionsary.main' }}>
+                                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                                         <LockOutlinedIcon />
                                     </Avatar>
                                     <Typography component="h1" variant="h5">
@@ -254,7 +250,7 @@ export default function SignIn() {
                                         alignItems: 'center',
                                     }}
                                 >
-                                    <Avatar sx={{ m: 1, bgcolor: 'seConditionsary.main' }}>
+                                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                                         <LockOutlinedIcon />
                                     </Avatar>
                                     <Typography component="h1" variant="h5">
@@ -298,7 +294,6 @@ export default function SignIn() {
                                                     label="Email Address"
                                                     name="email"
                                                     onChange={(e) => {
-                                                        console.log(e.target.checkValidity())
                                                         setEmail(e.target.value);
                                                     }}
                                                     autoComplete="email"
@@ -318,7 +313,7 @@ export default function SignIn() {
                                                     }}
                                                     autoComplete="new-password"
                                                     onFocus={(e) => {
-                                                        isPasswordValid ? setShowPasswordFormat(false) : setShowPasswordFormat(true);
+                                                        isPasswordValid ? setShowPasswordChecks(false) : setShowPasswordChecks(true);
                                                     }}
                                                     InputProps={
                                                         isPasswordValid ?
@@ -334,15 +329,15 @@ export default function SignIn() {
                                                     }
 
                                                 />
-                                                {showPasswordFormat
+                                                {showPasswordChecks
                                                     ?
                                                     (<Box sx={{ fontSize: 14 }}>
                                                         <ul>
-                                                            <li style={{ color: conditions.minLen8 ? "green" : "red" }}>Min Length 8</li>
-                                                            <li style={{ color: conditions.oneCapitalLetter ? "green" : "red" }}>Must have Capital Letter</li>
-                                                            <li style={{ color: conditions.oneSmallLetter ? "green" : "red" }}>Must have small Letter</li>
-                                                            <li style={{ color: conditions.oneNumber ? "green" : "red" }}>Must have an Integer</li>
-                                                            <li style={{ color: conditions.oneSpecialCharacter ? "green" : "red" }}>Must have special characters (*,#,$ etc)</li>
+                                                            <li style={{ color: validations.minLen8 ? "green" : "red" }}>Min Length 8</li>
+                                                            <li style={{ color: validations.oneCapitalLetter ? "green" : "red" }}>Must have Capital Letter</li>
+                                                            <li style={{ color: validations.oneSmallLetter ? "green" : "red" }}>Must have small Letter</li>
+                                                            <li style={{ color: validations.oneNumber ? "green" : "red" }}>Must have an Integer</li>
+                                                            <li style={{ color: validations.oneSpecialCharacter ? "green" : "red" }}>Must have special characters (*,#,$ etc)</li>
                                                         </ul>
                                                     </Box>)
                                                     :
@@ -364,8 +359,9 @@ export default function SignIn() {
                                                 clearInputState()
                                                 setAccountExists(true)
                                                 setIsPasswordValid(false);
-                                                setConditions(defaultConditions)
+                                                setValidations(defaultValidations)
                                                 setShowError("none")
+                                                setShowPasswordChecks(false)
                                             }}>
                                                 <Link href="#" variant="body2">
                                                     Already have an account? Sign in
