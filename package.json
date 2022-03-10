@@ -12,7 +12,9 @@
     "@testing-library/user-event": "^13.5.0",
     "react": "latest",
     "react-dom": "latest",
+    "react-drag-drop-files": "^2.3.4",
     "react-scripts": "latest",
+    "recharts": "^2.1.9",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
