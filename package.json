@@ -18,7 +18,6 @@
     "react-drag-drop-files": "^2.3.4",
     "react-router-dom": "^6.2.1",
     "react-scripts": "latest",
-    "recharts": "^2.1.9",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
