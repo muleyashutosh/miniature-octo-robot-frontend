@@ -16,7 +16,7 @@ function preventDefault(event) {
   event.preventDefault();
 }
 
-export default function Orders() {
+export default function Orders({transactionsUpdated}) {
   const [transactions, setTransactions] = useState([]);
   const axiosPrivate = useAxiosPrivate();
   const navigage = useNavigate();
@@ -49,7 +49,7 @@ export default function Orders() {
     }
 
 
-  }, [])
+  }, [transactionsUpdated])
 
   return (
     <React.Fragment>

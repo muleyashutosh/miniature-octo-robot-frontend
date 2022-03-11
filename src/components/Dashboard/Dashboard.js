@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  React,{useState} from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
@@ -86,6 +86,8 @@ const mdTheme = createTheme();
 
 function DashboardContent() {
   const [open, setOpen] = React.useState(true);
+  const [transactionsUpdated,setTransactionsUpdated] = useState(false);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -173,7 +175,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <Dnd/>
+                  <Dnd transactionsUpdated={{transactionsUpdated,setTransactionsUpdated}}/>
                 </Paper>
               </Grid>
               {/* Recent Deposits */}
@@ -194,7 +196,7 @@ function DashboardContent() {
               {/* Recent Orders */}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <Orders />
+                  <Orders transactionsUpdated={{transactionsUpdated}}/>
                 </Paper>
               </Grid>
             </Grid>
