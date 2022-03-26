@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import Link from '@mui/material/Link';
+// import {Link} from 'react-router-dom';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -67,15 +67,19 @@ export default function Orders({transactionsUpdated}) {
             <TableRow key={row.id}>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.timestamp}</TableCell>
-              <TableCell>{row.hash.slice(0, 32)}</TableCell>
+              <TableCell>
+                <a href={`https://ipfs.io/ipfs/${row.hash}`} target={"_blank"}>
+                  {row.hash.slice(0,32)}
+                  </a>
+              </TableCell>
               <TableCell><IconButton><DeleteIcon/></IconButton></TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
+      {/* <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
         See more documents
-      </Link>
+      </Link> */}
     </React.Fragment>
   );
 }

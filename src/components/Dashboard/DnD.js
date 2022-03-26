@@ -6,7 +6,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 
 import "./styles.css";
 
-const fileTypes = ["JPEG", "PNG", "GIF"];
+const fileTypes = ["JPEG", "PNG", "GIF", "PDF"];
 
 export default function Dnd(props) {
   const axiosPrivate = useAxiosPrivate();
