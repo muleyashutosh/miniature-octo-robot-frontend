@@ -1,4 +1,4 @@
-import  React,{useState} from 'react';
+import React, { useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
@@ -17,7 +17,11 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems} from './listItems';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { mainListItems } from './listItems';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import { useNavigate } from 'react-router-dom'
+
 
 import Deposits from './Deposits';
 import Orders from './Orders';
@@ -86,11 +90,34 @@ const mdTheme = createTheme();
 
 function DashboardContent() {
   const [open, setOpen] = React.useState(true);
-  const [transactionsUpdated,setTransactionsUpdated] = useState(false);
+  const [transactionsUpdated, setTransactionsUpdated] = useState(false);
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+
+
 
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const handleLogout = () => {
+    const controller = new AbortController();
+
+    const logout = async () => {
+      try {
+        const response = await axiosPrivate.get("/auth/logout", {
+          signal: controller.signal
+        })
+        console.log(response.data);
+        navigate('/', { state: { from: "/" }, replace: true })
+
+      } catch (err) {
+        console.log(err)
+      }
+    }
+
+    logout();
+  }
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -123,11 +150,16 @@ function DashboardContent() {
             >
               Dashboard
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <Box sx={{ display: 'flex', justifyContent: "space-between", gap: "10px" }}>
+              <IconButton color="inherit">
+                <Badge badgeContent={4} color="secondary">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+              <IconButton color="inherit" onClick = {handleLogout}>
+                <LogoutIcon />
+              </IconButton>
+            </Box>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -147,7 +179,7 @@ function DashboardContent() {
           <List component="nav">
             {mainListItems}
             <Divider sx={{ my: 1 }} />
-            
+
           </List>
         </Drawer>
         <Box
@@ -172,10 +204,10 @@ function DashboardContent() {
                     p: 2,
                     display: 'flex',
                     flexDirection: 'column',
-                    height: 240,
+                    height: 200,
                   }}
                 >
-                  <Dnd transactionsUpdated={{transactionsUpdated,setTransactionsUpdated}}/>
+                  <Dnd transactionsUpdated={{ transactionsUpdated, setTransactionsUpdated }} />
                 </Paper>
               </Grid>
               {/* Recent Deposits */}
@@ -185,9 +217,9 @@ function DashboardContent() {
                     p: 2,
                     display: 'flex',
                     flexDirection: 'row',
-                    alignItems : 'center',
-                    justifyContent : 'center',
-                    height: 240,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 200,
                   }}
                 >
                   <Deposits />
@@ -196,7 +228,7 @@ function DashboardContent() {
               {/* Recent Orders */}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <Orders transactionsUpdated={{transactionsUpdated}}/>
+                  <Orders transactionsUpdated={{ transactionsUpdated, setTransactionsUpdated }} />
                 </Paper>
               </Grid>
             </Grid>

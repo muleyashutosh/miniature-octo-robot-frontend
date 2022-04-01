@@ -12,3 +12,21 @@
     box-sizing: border-box;
   }
   
+
+  .dndBody {
+    display: flex;
+    justify-content: space-between;
+  }
+  .uploaderBody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .uploadButton {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }

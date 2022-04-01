@@ -1,12 +1,13 @@
 import React, {useState, useEffect} from 'react';
-// import {Link} from 'react-router-dom';
 import Table from '@mui/material/Table';
+import Box from '@mui/material/Box';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import Title from './Title';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -16,10 +17,11 @@ function preventDefault(event) {
   event.preventDefault();
 }
 
-export default function Orders({transactionsUpdated}) {
+export default function Orders(props) {
+  const { transactionsUpdated, setTransactionsUpdated } = props.transactionsUpdated
   const [transactions, setTransactions] = useState([]);
   const axiosPrivate = useAxiosPrivate();
-  const navigage = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
@@ -33,11 +35,10 @@ export default function Orders({transactionsUpdated}) {
         })
         console.log(response.data);
         isMounted && setTransactions(response.data)
-        console.log(response.data);
 
       } catch (err) {
         console.log(err)
-        navigage('/', { state: { from: location }, replace: true })
+        navigate('/', { state: { from: location }, replace: true })
       }
     }
 
@@ -49,11 +50,16 @@ export default function Orders({transactionsUpdated}) {
     }
 
 
-  }, [transactionsUpdated])
+  }, [transactionsUpdated, axiosPrivate, location, navigate])
 
   return (
     <React.Fragment>
-      <Title>Uploaded Documents</Title>
+      <Box sx={{display: 'flex', justifyContent: "space-between"}}>
+        <Title>Uploaded Documents</Title>
+        <IconButton color="inherit" onClick={() => { setTransactionsUpdated(!transactionsUpdated) }}>
+          <RefreshIcon />
+        </IconButton>
+      </Box>
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -63,8 +69,8 @@ export default function Orders({transactionsUpdated}) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {transactions.map((row) => (
-            <TableRow key={row.id}>
+          {transactions.map((row, id) => (
+            <TableRow key={id}>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.timestamp}</TableCell>
               <TableCell>

@@ -107,9 +107,9 @@ export default function SignIn() {
                 },
                 withCredentials: true
             });
-            const accessToken = res?.data?.accessToken;
-
-            setAuth({ email, password, accessToken })
+            if (res?.data?.status !== 'ok') throw Error(); 
+            localStorage.setItem('app_access_token', res?.data?.accessToken)
+            setAuth({ email, accessToken: res?.data?.accessToken })
             navigate(from, { replace: true });
         } catch (error) {
             setShowError("");
@@ -132,9 +132,9 @@ export default function SignIn() {
                 },
                 withCredentials: true
             })
-            const accessToken = res?.data?.accessToken;
-
-            setAuth({ email, password, accessToken })
+            if (res?.data?.status !== 'ok') throw Error(); 
+            localStorage.setItem('app_access_token', res?.data?.accessToken)
+            setAuth({ email, accessToken: res?.data?.accessToken })
             navigate(from, { replace: true });
         } catch (error) {
             setShowError("");
