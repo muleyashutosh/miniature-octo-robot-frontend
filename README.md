@@ -25,9 +25,10 @@ This is the repo where the Frontend of our Final year project lives
     npm i
   
   5. create a `.env` file in root directory and add env vars using command
-
-    echo "REACT_APP_API_URL = https://projectapi.elcarto.xyz" > .env
-
+  ``` 
+    echo "REACT_APP_API_URL=https://projectapi.elcarto.xyz
+    PORT=3001" > .env
+  ```
 
 ## Available Scripts
 
