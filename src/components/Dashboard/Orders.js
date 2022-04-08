@@ -38,7 +38,7 @@ export default function Orders(props) {
 
     } catch (err) {
       console.log(err)
-      navigage('/', { state: { from: location }, replace: true })
+      navigate('/', { state: { from: location }, replace: true })
     }
 
   }
