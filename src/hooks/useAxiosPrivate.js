@@ -13,7 +13,7 @@ const useAxiosPrivate = () => {
       response => response, 
       async(err) => {
         const prevRequest = err?.config;
-        if ((err?.respose.status === 403 || err?.respose.status === 401) && !prevRequest?.sent) {
+        if ((err?.response.status === 403 || err?.response.status === 401) && !prevRequest?.sent) {
           prevRequest.sent = true;
           const newAccessToken = await refresh();
           localStorage.setItem("app_access_token", newAccessToken)

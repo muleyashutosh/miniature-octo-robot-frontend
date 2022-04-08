@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from '@mui/material/Table';
 import Box from '@mui/material/Box';
 import TableBody from '@mui/material/TableBody';
@@ -11,18 +11,33 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import Title from './Title';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useNavigate, useLocation } from 'react-router-dom'
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 
 function preventDefault(event) {
   event.preventDefault();
 }
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 export default function Orders(props) {
   const { transactionsUpdated, setTransactionsUpdated } = props.transactionsUpdated
   const [transactions, setTransactions] = useState([]);
+  const [open, setOpen] = React.useState(false);
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   const deleteDocument = async (hash) => {
 
@@ -38,7 +53,7 @@ export default function Orders(props) {
 
     } catch (err) {
       console.log(err)
-      navigate('/', { state: { from: location }, replace: true })
+      setOpen(true);
     }
 
   }
@@ -73,7 +88,12 @@ export default function Orders(props) {
 
   return (
     <React.Fragment>
-      <Box sx={{display: 'flex', justifyContent: "space-between"}}>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          Server Error Occurred
+        </Alert>
+      </Snackbar>
+      <Box sx={{ display: 'flex', justifyContent: "space-between" }}>
         <Title>Uploaded Documents</Title>
         <IconButton color="inherit" onClick={() => { setTransactionsUpdated(!transactionsUpdated) }}>
           <RefreshIcon />
@@ -97,7 +117,7 @@ export default function Orders(props) {
                   {row.hash.slice(0, 32)}
                 </a>
               </TableCell>
-              <TableCell><IconButton onClick={()=>{deleteDocument(row.hash)}}><DeleteIcon /></IconButton></TableCell>
+              <TableCell><IconButton onClick={() => { deleteDocument(row.hash) }}><DeleteIcon /></IconButton></TableCell>
             </TableRow>
           ))}
         </TableBody>
