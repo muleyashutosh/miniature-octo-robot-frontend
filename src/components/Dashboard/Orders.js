@@ -24,6 +24,25 @@ export default function Orders(props) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const deleteDocument = async (hash) => {
+
+    try {
+      let isMounted = true;
+      const controller = new AbortController();
+      const response = await axiosPrivate.delete(`/transactions/${hash}`, {
+        signal: controller.signal,
+      })
+      console.log(response.data);
+      isMounted && setTransactions(response.data)
+      console.log(response.data);
+
+    } catch (err) {
+      console.log(err)
+      navigage('/', { state: { from: location }, replace: true })
+    }
+
+  }
+
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -75,10 +94,10 @@ export default function Orders(props) {
               <TableCell>{row.timestamp}</TableCell>
               <TableCell>
                 <a href={`https://ipfs.io/ipfs/${row.hash}`} target={"_blank"}>
-                  {row.hash.slice(0,32)}
-                  </a>
+                  {row.hash.slice(0, 32)}
+                </a>
               </TableCell>
-              <TableCell><IconButton><DeleteIcon/></IconButton></TableCell>
+              <TableCell><IconButton onClick={()=>{deleteDocument(row.hash)}}><DeleteIcon /></IconButton></TableCell>
             </TableRow>
           ))}
         </TableBody>
