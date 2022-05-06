@@ -21,11 +21,19 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { mainListItems } from './listItems';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useNavigate } from 'react-router-dom'
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 
 import Deposits from './Deposits';
 import Orders from './Orders';
 import Dnd from './DnD';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+
 
 function Copyright(props) {
   return (
@@ -90,11 +98,18 @@ const mdTheme = createTheme();
 
 function DashboardContent() {
   const [open, setOpen] = React.useState(true);
+  const [alertOpen, setAlertOpen] = React.useState(false);
   const [transactionsUpdated, setTransactionsUpdated] = useState(false);
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
 
-
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+  
+    setAlertOpen(false);
+  };
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -113,6 +128,7 @@ function DashboardContent() {
 
       } catch (err) {
         console.log(err)
+        setAlertOpen(true);
       }
     }
 
@@ -121,6 +137,11 @@ function DashboardContent() {
 
   return (
     <ThemeProvider theme={mdTheme}>
+      <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          Server Error Occurred
+        </Alert>
+      </Snackbar>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
@@ -156,7 +177,7 @@ function DashboardContent() {
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
-              <IconButton color="inherit" onClick = {handleLogout}>
+              <IconButton color="inherit" onClick={handleLogout}>
                 <LogoutIcon />
               </IconButton>
             </Box>
@@ -227,7 +248,7 @@ function DashboardContent() {
               </Grid>
               {/* Recent Orders */}
               <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                <Paper sx={{ p: 0, display: 'flex', flexDirection: 'column' }}>
                   <Orders transactionsUpdated={{ transactionsUpdated, setTransactionsUpdated }} />
                 </Paper>
               </Grid>
