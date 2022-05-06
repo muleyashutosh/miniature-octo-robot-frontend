@@ -13,6 +13,9 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import LinearProgress from '@mui/material/LinearProgress';
+import Paper from '@mui/material/Paper';
+
 
 
 function preventDefault(event) {
@@ -30,6 +33,7 @@ export default function Orders(props) {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const location = useLocation();
+  const [updating, setUpdating] = useState(false)
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -48,9 +52,7 @@ export default function Orders(props) {
         signal: controller.signal,
       })
       console.log(response.data);
-      isMounted && setTransactions(response.data)
-      console.log(response.data);
-
+      isMounted && setTransactionsUpdated(!transactionsUpdated)
     } catch (err) {
       console.log(err)
       setOpen(true);
@@ -61,7 +63,7 @@ export default function Orders(props) {
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
-
+    setUpdating(true)
     const getTransactions = async () => {
       try {
         const response = await axiosPrivate.get("/transactions", {
@@ -73,6 +75,8 @@ export default function Orders(props) {
       } catch (err) {
         console.log(err)
         navigate('/', { state: { from: location }, replace: true })
+      } finally {
+        setUpdating(false)
       }
     }
 
@@ -88,43 +92,45 @@ export default function Orders(props) {
 
   return (
     <React.Fragment>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-          Server Error Occurred
-        </Alert>
-      </Snackbar>
-      <Box sx={{ display: 'flex', justifyContent: "space-between" }}>
-        <Title>Uploaded Documents</Title>
-        <IconButton color="inherit" onClick={() => { setTransactionsUpdated(!transactionsUpdated) }}>
-          <RefreshIcon />
-        </IconButton>
+      <Box sx={{ width: "100%" }}>
+        {updating ? <LinearProgress /> : null}
       </Box>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell><b>Document Name</b></TableCell>
-            <TableCell><b>Upload Date</b></TableCell>
-            <TableCell><b>Hash Of File</b></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {transactions.map((row, id) => (
-            <TableRow key={id}>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.timestamp}</TableCell>
-              <TableCell>
-                <a href={`https://ipfs.io/ipfs/${row.hash}`} target={"_blank"}>
-                  {row.hash.slice(0, 32)}
-                </a>
-              </TableCell>
-              <TableCell><IconButton onClick={() => { deleteDocument(row.hash) }}><DeleteIcon /></IconButton></TableCell>
+      <Paper sx= {{ p: 2, display: 'flex', flexDirection: 'column' }}>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+            Server Error Occurred
+          </Alert>
+        </Snackbar>
+        <Box sx={{ display: 'flex', justifyContent: "space-between" }}>
+          <Title>Uploaded Documents</Title>
+          <IconButton color="inherit" onClick={() => { setTransactionsUpdated(!transactionsUpdated) }}>
+            <RefreshIcon />
+          </IconButton>
+        </Box>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell><b>Document Name</b></TableCell>
+              <TableCell><b>Upload Date</b></TableCell>
+              <TableCell><b>Hash Of File</b></TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      {/* <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
-        See more documents
-      </Link> */}
+          </TableHead>
+          <TableBody>
+            {transactions.map((row, id) => (
+              <TableRow key={id}>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.timestamp}</TableCell>
+                <TableCell>
+                  <a href={`https://ipfs.io/ipfs/${row.hash}`} target={"_blank"}>
+                    {row.hash.slice(0, 32)}
+                  </a>
+                </TableCell>
+                <TableCell><IconButton onClick={() => { deleteDocument(row.hash) }}><DeleteIcon /></IconButton></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Paper>
     </React.Fragment>
   );
 }
