@@ -5,6 +5,7 @@ import Layout from "./components/Layout";
 import Missing from './components/Missing'
 import SignIn from './components/Signin/Signin';
 import RequireAuth from './components/RequireAuth'
+// import Received from './components/Received';
 
 
 function App() {
@@ -16,12 +17,20 @@ function App() {
         {/* protected routes */}
         <Route element = {<RequireAuth/>} >
           <Route
-            path="/dashboard"
+            path="/home/*"
             element={
               <Dashboard />
             }
           />
         </Route>
+        {/* <Route element = {<RequireAuth/>} >
+          <Route
+            path="/received"
+            element={
+              <Received />
+            }
+          />
+        </Route> */}
         <Route
           path="*"
           element={<Missing />}

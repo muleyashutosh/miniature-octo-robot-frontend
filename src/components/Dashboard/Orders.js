@@ -15,12 +15,11 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
+import download from 'downloadjs';
+import DownloadIcon from '@mui/icons-material/Download'
+import SendIcon from "@mui/icons-material/Send";
 
 
-
-function preventDefault(event) {
-  event.preventDefault();
-}
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -60,6 +59,44 @@ export default function Orders(props) {
 
   }
 
+
+
+  const downloadDocument = async (hash, name) => {
+    try {
+      //  let isMounted = true;
+      const controller = new AbortController();
+      const response = await axiosPrivate.get(`/transactions/${hash}`, {
+        signal: controller.signal,
+        responseType: "blob",
+      });
+      console.log(response.data);
+      download(response.data, name);
+      //  isMounted && setDocumentsUpdated(!documentsUpdated);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
+  const broadCast = async (hash) => {
+    try {
+      //  let isMounted = true;
+      const controller = new AbortController();
+      const response = await axiosPrivate.put(`/transactions/${hash}`, {
+        signal: controller.signal,
+        responseType: "blob",
+      });
+      console.log(response.data);
+      // download(response.data, name);
+      //  isMounted && setDocumentsUpdated(!documentsUpdated);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+
+
+
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -92,27 +129,36 @@ export default function Orders(props) {
 
   return (
     <React.Fragment>
-      <Box sx={{ width: "100%" }}>
-        {updating ? <LinearProgress /> : null}
-      </Box>
-      <Paper sx= {{ p: 2, display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ width: "100%" }}>{updating ? <LinearProgress /> : null}</Box>
+      <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
             Server Error Occurred
           </Alert>
         </Snackbar>
-        <Box sx={{ display: 'flex', justifyContent: "space-between" }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Title>Uploaded Documents</Title>
-          <IconButton color="inherit" onClick={() => { setTransactionsUpdated(!transactionsUpdated) }}>
+          <IconButton
+            color="inherit"
+            onClick={() => {
+              setTransactionsUpdated(!transactionsUpdated);
+            }}
+          >
             <RefreshIcon />
           </IconButton>
         </Box>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell><b>Document Name</b></TableCell>
-              <TableCell><b>Upload Date</b></TableCell>
-              <TableCell><b>Hash Of File</b></TableCell>
+              <TableCell>
+                <b>Document Name</b>
+              </TableCell>
+              <TableCell>
+                <b>Upload Date</b>
+              </TableCell>
+              <TableCell>
+                <b>Hash Of File</b>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -121,11 +167,40 @@ export default function Orders(props) {
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.timestamp}</TableCell>
                 <TableCell>
-                  <a href={`https://ipfs.io/ipfs/${row.hash}`} target={"_blank"}>
+                  <a
+                    href={`https://ipfs.io/ipfs/${row.hash}`}
+                    target={"_blank"}
+                  >
                     {row.hash.slice(0, 32)}
                   </a>
                 </TableCell>
-                <TableCell><IconButton onClick={() => { deleteDocument(row.hash) }}><DeleteIcon /></IconButton></TableCell>
+                <TableCell>
+                  <IconButton
+                    onClick={() => {
+                      broadCast(row.hash);
+                    }}
+                  >
+                    <SendIcon />
+                  </IconButton>
+                </TableCell>
+                <TableCell>
+                  <IconButton
+                    onClick={() => {
+                      deleteDocument(row.hash);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+                <TableCell>
+                  <IconButton
+                    onClick={() => {
+                      downloadDocument(row.hash, row.name);
+                    }}
+                  >
+                    <DownloadIcon />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
