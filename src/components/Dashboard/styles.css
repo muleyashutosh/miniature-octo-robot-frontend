@@ -31,3 +31,8 @@
     justify-content: center;
     margin-right: 20px;
   }
+
+  .selectableTableRow:hover {
+    background-color: lightgray;
+    cursor: pointer;
+  }

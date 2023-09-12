@@ -43,7 +43,7 @@ export default function SignIn() {
     const { setAuth } = useAuth()
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || "/dashboard";
+    const from = location.state?.from?.pathname || "/home/dashboard";
 
 
     const [showError, setShowError] = useState("none")
@@ -63,6 +63,7 @@ export default function SignIn() {
     const [password, setPassword] = useState("")
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
+    const [role, setRole] = useState("")
 
     const clearInputState = () => {
         setEmail("")
@@ -125,7 +126,8 @@ export default function SignIn() {
                 email: email,
                 password: password,
                 firstName: firstName,
-                lastName: lastName
+                lastName: lastName,
+                role: role
             }, {
                 headers: {
                     "Content-Type": "application/json",
@@ -145,237 +147,314 @@ export default function SignIn() {
 
 
     return (
-        <ThemeProvider theme={theme}>
-            <Grid container component="main" sx={{ height: '100vh' }}>
-                <CssBaseline />
-                <Grid
-                    item
-                    xs={false}
-                    sm={4}
-                    md={7}
-                    sx={{
-                        backgroundImage: `url(${background})`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundColor: (t) =>
-                            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
+      <ThemeProvider theme={theme}>
+        <Grid container component="main" sx={{ height: "100vh" }}>
+          <CssBaseline />
+          <Grid
+            item
+            xs={false}
+            sm={4}
+            md={7}
+            sx={{
+              backgroundImage: `url(${background})`,
+              backgroundRepeat: "no-repeat",
+              backgroundColor: (t) =>
+                t.palette.mode === "light"
+                  ? t.palette.grey[50]
+                  : t.palette.grey[900],
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          {accountExists ? (
+            <Grid
+              item
+              xs={12}
+              sm={8}
+              md={5}
+              component={Paper}
+              elevation={6}
+              square
+            >
+              <Box
+                sx={{
+                  my: 14,
+                  mx: 12,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+                  <LockOutlinedIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                  Sign in
+                </Typography>
+                <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
                     }}
-                />
-                {
-                    accountExists ?
-                        (
-                            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                                <Box
-                                    sx={{
-                                        my: 14,
-                                        mx: 12,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                                        <LockOutlinedIcon />
-                                    </Avatar>
-                                    <Typography component="h1" variant="h5">
-                                        Sign in
-                                    </Typography>
-                                    <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
-                                        <TextField
-                                            margin="normal"
-                                            required
-                                            fullWidth
-                                            id="email"
-                                            label="Email Address"
-                                            name="email"
-                                            autoComplete="email"
-                                            onChange={(e) => {
-                                                setEmail(e.target.value);
-                                            }}
-                                            autoFocus
-                                        />
-                                        <TextField
-                                            margin="normal"
-                                            required
-                                            fullWidth
-                                            name="password"
-                                            label="Password"
-                                            type="password"
-                                            id="password"
-                                            onChange={(e) => {
-                                                setPassword(e.target.value);
-                                            }}
-                                            autoComplete="current-password"
-                                        />
-                                        <FormControlLabel
+                    autoFocus
+                  />
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
+                    autoComplete="current-password"
+                  />
+                  {/* <FormControlLabel
                                             control={<Checkbox value="remember" color="primary" />}
                                             label="Remember me"
-                                        />
-                                        <Alert severity="error" sx={{ fontSize: 16, display: showError }}>{errorMsg}</Alert>
-                                        <Button
-                                            type="submit"
-                                            fullWidth
-                                            variant="contained"
-                                            sx={{ mt: 3, mb: 2 }}
-                                        >
-                                            Sign In
-                                        </Button>
-                                        <Grid container>
-                                            <Grid item onClick={() => {
-                                                clearInputState()
-                                                setAccountExists(false)
-                                                setShowError("none")
-                                            }}>
-
-                                                <Link href="#" variant="body2">
-                                                    {"Don't have an account? Sign Up"}
-                                                </Link>
-                                            </Grid>
-                                        </Grid>
-                                        <Copyright sx={{ mt: 5 }} />
-                                    </Box>
-                                </Box>
-                            </Grid>
-                        )
-                        :
-                        (
-                            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                                <Box
-                                    sx={{
-                                        my: 12,
-                                        mx: 12,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                                        <LockOutlinedIcon />
-                                    </Avatar>
-                                    <Typography component="h1" variant="h5">
-                                        Sign up
-                                    </Typography>
-                                    <Box component="form" onSubmit={signupSubmit} sx={{ mt: 3 }}>
-                                        <Grid container spacing={2}>
-                                            <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    autoComplete="given-name"
-                                                    name="firstName"
-                                                    required
-                                                    fullWidth
-                                                    id="firstName"
-                                                    label="First Name"
-                                                    onChange={(e) => {
-                                                        setFirstName(e.target.value);
-                                                    }}
-                                                    autoFocus
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    required
-                                                    fullWidth
-                                                    id="lastName"
-                                                    label="Last Name"
-                                                    name="lastName"
-                                                    onChange={(e) => {
-                                                        setLastName(e.target.value);
-                                                    }}
-                                                    autoComplete="family-name"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12}>
-                                                <TextField
-                                                    required
-                                                    fullWidth
-                                                    type="email"
-                                                    id="email"
-                                                    label="Email Address"
-                                                    name="email"
-                                                    onChange={(e) => {
-                                                        setEmail(e.target.value);
-                                                    }}
-                                                    autoComplete="email"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12}>
-                                                <TextField
-                                                    required
-                                                    fullWidth
-                                                    name="password"
-                                                    label="Password"
-                                                    type="password"
-                                                    id="password"
-                                                    onChange={(e) => {
-                                                        setPassword(e.target.value);
-                                                        validatePassword(e.target.value);
-                                                    }}
-                                                    autoComplete="new-password"
-                                                    onFocus={(e) => {
-                                                        isPasswordValid ? setShowPasswordChecks(false) : setShowPasswordChecks(true);
-                                                    }}
-                                                    InputProps={
-                                                        isPasswordValid ?
-                                                            {
-                                                                endAdornment: (
-                                                                    <InputAdornment position="end"  >
-                                                                        <CheckCircleIcon color='success' style={{ display: "hidden" }} />
-                                                                    </InputAdornment>
-                                                                ),
-                                                            }
-                                                            :
-                                                            {}
-                                                    }
-
-                                                />
-                                                {showPasswordChecks
-                                                    ?
-                                                    (<Box sx={{ fontSize: 14 }}>
-                                                        <ul>
-                                                            <li style={{ color: validations.minLen8 ? "green" : "red" }}>Min Length 8</li>
-                                                            <li style={{ color: validations.oneCapitalLetter ? "green" : "red" }}>Must have Capital Letter</li>
-                                                            <li style={{ color: validations.oneSmallLetter ? "green" : "red" }}>Must have small Letter</li>
-                                                            <li style={{ color: validations.oneNumber ? "green" : "red" }}>Must have an Integer</li>
-                                                            <li style={{ color: validations.oneSpecialCharacter ? "green" : "red" }}>Must have special characters (*,#,$ etc)</li>
-                                                        </ul>
-                                                    </Box>)
-                                                    :
-                                                    <></>
-                                                }
-                                            </Grid>
-                                        </Grid>
-                                        <Button
-                                            type="submit"
-                                            fullWidth
-                                            variant="contained"
-                                            sx={{ mt: 3, mb: 2 }}
-                                        >
-                                            Sign Up
-                                        </Button>
-                                        <Alert severity="error" sx={{ fontSize: 16, display: showError }}>{errorMsg}</Alert>
-                                        <Grid container justifyContent="flex-end">
-                                            <Grid item onClick={() => {
-                                                clearInputState()
-                                                setAccountExists(true)
-                                                setIsPasswordValid(false);
-                                                setValidations(defaultValidations)
-                                                setShowError("none")
-                                                setShowPasswordChecks(false)
-                                            }}>
-                                                <Link href="#" variant="body2">
-                                                    Already have an account? Sign in
-                                                </Link>
-                                            </Grid>
-                                        </Grid>
-                                    </Box>
-                                </Box>
-                            </Grid>
-                        )
-                }
-
-
+                                        /> */}
+                  <Alert
+                    severity="error"
+                    sx={{ fontSize: 16, display: showError }}
+                  >
+                    {errorMsg}
+                  </Alert>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2 }}
+                  >
+                    Sign In
+                  </Button>
+                  <Grid container>
+                    <Grid
+                      item
+                      onClick={() => {
+                        clearInputState();
+                        setAccountExists(false);
+                        setShowError("none");
+                      }}
+                    >
+                      <Link href="#" variant="body2">
+                        {"Don't have an account? Sign Up"}
+                      </Link>
+                    </Grid>
+                  </Grid>
+                  <Copyright sx={{ mt: 5 }} />
+                </Box>
+              </Box>
             </Grid>
-        </ThemeProvider>
+          ) : (
+            <Grid
+              item
+              xs={12}
+              sm={8}
+              md={5}
+              component={Paper}
+              elevation={6}
+              square
+            >
+              <Box
+                sx={{
+                  my: 12,
+                  mx: 12,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+                  <LockOutlinedIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                  Sign up
+                </Typography>
+                <Box component="form" onSubmit={signupSubmit} sx={{ mt: 3 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        autoComplete="given-name"
+                        name="firstName"
+                        required
+                        fullWidth
+                        id="firstName"
+                        label="First Name"
+                        onChange={(e) => {
+                          setFirstName(e.target.value);
+                        }}
+                        autoFocus
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        required
+                        fullWidth
+                        id="lastName"
+                        label="Last Name"
+                        name="lastName"
+                        onChange={(e) => {
+                          setLastName(e.target.value);
+                        }}
+                        autoComplete="family-name"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        required
+                        fullWidth
+                        type="email"
+                        id="email"
+                        label="Email Address"
+                        name="email"
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                        }}
+                        autoComplete="email"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          validatePassword(e.target.value);
+                        }}
+                        autoComplete="new-password"
+                        onFocus={(e) => {
+                          isPasswordValid
+                            ? setShowPasswordChecks(false)
+                            : setShowPasswordChecks(true);
+                        }}
+                        InputProps={
+                          isPasswordValid
+                            ? {
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <CheckCircleIcon
+                                      color="success"
+                                      style={{ display: "hidden" }}
+                                    />
+                                  </InputAdornment>
+                                ),
+                              }
+                            : {}
+                        }
+                      />
+                      <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="role"
+                        label="Role"
+                        type="text"
+                        id="role"
+                        onChange={(e) => {
+                          setRole(e.target.value);
+                        }}
+                        autoComplete=""
+                      />
+                      {showPasswordChecks ? (
+                        <Box sx={{ fontSize: 14 }}>
+                          <ul>
+                            <li
+                              style={{
+                                color: validations.minLen8 ? "green" : "red",
+                              }}
+                            >
+                              Min Length 8
+                            </li>
+                            <li
+                              style={{
+                                color: validations.oneCapitalLetter
+                                  ? "green"
+                                  : "red",
+                              }}
+                            >
+                              Must have Capital Letter
+                            </li>
+                            <li
+                              style={{
+                                color: validations.oneSmallLetter
+                                  ? "green"
+                                  : "red",
+                              }}
+                            >
+                              Must have small Letter
+                            </li>
+                            <li
+                              style={{
+                                color: validations.oneNumber ? "green" : "red",
+                              }}
+                            >
+                              Must have an Integer
+                            </li>
+                            <li
+                              style={{
+                                color: validations.oneSpecialCharacter
+                                  ? "green"
+                                  : "red",
+                              }}
+                            >
+                              Must have special characters (*,#,$ etc)
+                            </li>
+                          </ul>
+                        </Box>
+                      ) : (
+                        <></>
+                      )}
+                    </Grid>
+                  </Grid>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2 }}
+                  >
+                    Sign Up
+                  </Button>
+                  <Alert
+                    severity="error"
+                    sx={{ fontSize: 16, display: showError }}
+                  >
+                    {errorMsg}
+                  </Alert>
+                  <Grid container justifyContent="flex-end">
+                    <Grid
+                      item
+                      onClick={() => {
+                        clearInputState();
+                        setAccountExists(true);
+                        setIsPasswordValid(false);
+                        setValidations(defaultValidations);
+                        setShowError("none");
+                        setShowPasswordChecks(false);
+                      }}
+                    >
+                      <Link href="#" variant="body2">
+                        Already have an account? Sign in
+                      </Link>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Box>
+            </Grid>
+          )}
+        </Grid>
+      </ThemeProvider>
     );
 }

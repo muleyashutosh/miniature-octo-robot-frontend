@@ -12,6 +12,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.26.0",
     "dotenv": "^16.0.0",
+    "downloadjs": "^1.4.7",
     "jwt-decode": "^3.1.2",
     "react": "latest",
     "react-dom": "latest",

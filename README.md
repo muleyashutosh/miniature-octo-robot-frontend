@@ -2,6 +2,8 @@
 
 This is the repo where the Frontend of our Final year project lives
 
+Link to backend repo: [miniature-octo-robot-backend](https://github.com/muleyashutosh/miniature-octo-robot-backend)
+
 ## First setup instructions
 
   1. Make sure to have LTS version of node and npm installed [nodejs](http://nodejs.org)
